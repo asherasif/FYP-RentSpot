@@ -76,7 +76,12 @@ const ReturnMapsScreen = () => {
         console.log("Booking details loaded:", response.data);
         setBookingDetails(response.data);
         
-        // Set origin location from booking details
+        console.log("=== BACKEND COORDINATES DEBUG ===");
+        console.log("Raw booking data:", response.data);
+        console.log("Origin location from backend:", response.data.origin_location);
+        console.log("Origin address:", response.data.origin_address);
+        
+        // Set origin location (owner's location) - this is where we need to return the item
         if (response.data.origin_location && 
             response.data.origin_location.latitude && 
             response.data.origin_location.longitude) {
@@ -116,22 +121,67 @@ const ReturnMapsScreen = () => {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") return;
         const location = await Location.getCurrentPositionAsync({});
-        setUserLocation({
+        let currentLocation = {
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
-        });
+        };
+        
+        console.log("=== GPS LOCATION DEBUG ===");
+        console.log("Raw GPS location:", currentLocation);
+        
+        // FOR TESTING: If location seems to be default/simulator coordinates, offset slightly
+        if (Math.abs(currentLocation.latitude - 24.8607) < 0.01 && 
+            Math.abs(currentLocation.longitude - 67.0011) < 0.01) {
+          console.log("📱 Detected simulator/default coordinates, adding offset for testing...");
+          currentLocation = {
+            latitude: 24.8707,  // Slightly north
+            longitude: 67.0211,  // Slightly east
+          };
+          console.log("Adjusted location for testing:", currentLocation);
+        }
+        
+        setUserLocation(currentLocation);
       } catch (e) {
         setError("Failed to get your location.");
       }
     })();
   }, []);
 
-  // Build route from origin to userLocation
+  // Debug: Check if coordinates are different
+  useEffect(() => {
+    if (userLocation && origin) {
+      console.log("=== COORDINATE COMPARISON ===");
+      console.log("User Location:", userLocation);
+      console.log("Origin (Owner):", origin);
+      
+      const latDiff = Math.abs(userLocation.latitude - origin.latitude);
+      const lngDiff = Math.abs(userLocation.longitude - origin.longitude);
+      
+      console.log("Latitude difference:", latDiff);
+      console.log("Longitude difference:", lngDiff);
+      
+      if (latDiff < 0.001 && lngDiff < 0.001) {
+        console.warn("⚠️ WARNING: User location and origin are nearly identical!");
+        console.log("This means you're very close to the owner's location, so the route will be very short.");
+      } else {
+        console.log("✅ Coordinates are different - route should work correctly");
+      }
+    }
+  }, [userLocation, origin]);
+
+  // Build route from current location to owner's location for return trip
   useEffect(() => {
     const fetchRoute = async () => {
       if (!userLocation || !origin) return;
-      // For return ride, swap the origin and destination since we're going from user to owner
+      
+      console.log("=== RETURN ROUTE DEBUG ===");
+      console.log("User Location (START):", userLocation);
+      console.log("Origin (END - Owner):", origin);
+      
+      // For return ride, go from current user location to origin (owner location)
       const url = `https://router.project-osrm.org/route/v1/driving/${userLocation.longitude},${userLocation.latitude};${origin.longitude},${origin.latitude}?overview=full&geometries=geojson`;
+      console.log("Route URL:", url);
+      
       try {
         const res = await fetch(url);
         const data = await res.json();
@@ -139,13 +189,18 @@ const ReturnMapsScreen = () => {
           const coordinates = data.routes[0].geometry.coordinates.map(
             ([lng, lat]) => ({ latitude: lat, longitude: lng })
           );
+          console.log("Route coordinates length:", coordinates.length);
+          console.log("Route start point:", coordinates[0]);
+          console.log("Route end point:", coordinates[coordinates.length - 1]);
           setRoute(coordinates);
         } else {
+          console.log("No routes found, using fallback");
           // Fallback to generated route
           generateFallbackRoute(userLocation, origin);
         }
       } catch (err) {
         console.error("Failed to fetch route:", err);
+        console.log("Using fallback route due to error");
         // Fallback to generated route
         generateFallbackRoute(userLocation, origin);
       }
@@ -175,18 +230,23 @@ const ReturnMapsScreen = () => {
 
   // Animate rider movement
   useEffect(() => {
-    if (route.length >= 2 && !success && bookingDetails?.return_status === 'in_return') {
+    if (route.length >= 2 && !success && bookingDetails?.return_status === 'in_return' && userLocation) {
+      console.log("=== ANIMATION DEBUG ===");
+      console.log("Starting animation...");
+      console.log("User Location:", userLocation);
+      console.log("Route first point:", route[0]);
+      console.log("Route last point:", route[route.length - 1]);
+      
       latestIndexRef.current = 0;
       
-      // Initialize animated values from user location (first point in route)
-      if (route[0]) {
-        animatedLatitude.setValue(route[0].latitude);
-        animatedLongitude.setValue(route[0].longitude);
-      }
+      // Initialize animated values from user's current location explicitly
+      console.log("Setting animated marker to user location:", userLocation.latitude, userLocation.longitude);
+      animatedLatitude.setValue(userLocation.latitude);
+      animatedLongitude.setValue(userLocation.longitude);
       
       animateStep(0);
     }
-  }, [route, success, bookingDetails?.return_status]);
+  }, [route, success, bookingDetails?.return_status, userLocation]);
 
   const animateStep = (index) => {
     if (index >= route.length - 1 || !route[index + 1]) {
@@ -312,19 +372,19 @@ const ReturnMapsScreen = () => {
           <MapView
             style={{ width: "100%", height: 300, borderRadius: 20 }}
             region={{
-              // Center the map between user and origin for better view of the route
-              latitude: userLocation ? 
-                (userLocation.latitude + (origin?.latitude || 0)) / 2 : 
+              // Center the map between current location and owner location
+              latitude: userLocation && origin ? 
+                (userLocation.latitude + origin.latitude) / 2 : 
                 (origin?.latitude || 25.0700),
-              longitude: userLocation ? 
-                (userLocation.longitude + (origin?.longitude || 0)) / 2 : 
+              longitude: userLocation && origin ? 
+                (userLocation.longitude + origin.longitude) / 2 : 
                 (origin?.longitude || 67.2840),
               latitudeDelta: 0.1, // Increase zoom out to see both points
               longitudeDelta: 0.1,
             }}
           >
-            {origin && <Marker coordinate={origin} title="Owner Location" pinColor="green" />}
-            {userLocation && <Marker coordinate={userLocation} title="Your Location" pinColor="red" />}
+            {origin && <Marker coordinate={origin} title="Owner Location (Destination)" pinColor="green" />}
+            {userLocation && <Marker coordinate={userLocation} title="Your Current Location (Start)" pinColor="red" />}
             
             {route.length >= 2 && (
               <>
@@ -351,13 +411,13 @@ const ReturnMapsScreen = () => {
                   <View className="flex flex-row items-center gap-x-2">
                     <Image source={logo} className="w-5 h-5" />
                     <Text className="text-md font-JakartaMedium text-white" numberOfLines={1}>
-                      From: {bookingDetails?.destination_address || "Your Location"}
+                      From: Your Current Location
                     </Text>
                   </View>
                   <View className="flex flex-row items-center gap-x-2">
                     <Image source={logo} className="w-5 h-5" />
                     <Text className="text-md font-JakartaMedium text-white" numberOfLines={1}>
-                      To: {bookingDetails?.origin_address || "Owner's Location"}
+                      To: {origin?.name || bookingDetails?.origin_address || "Owner's Location"}
                     </Text>
                   </View>
                 </View>

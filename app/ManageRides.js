@@ -138,7 +138,7 @@ const ManageRides = () => {
       );
       fetchReturnRides();
       Alert.alert("Success", "Return request accepted. Return delivery in progress.");
-      router.push(`/RiderscreenVendor?bookingId=${bookingId}&isReturn=true`);
+      router.push(`/ReturnMapsScreen?bookingId=${bookingId}&isReturn=true`);
     } catch (error) {
       console.error("Error accepting return:", error);
       Alert.alert("Error", "Failed to accept return request.");
