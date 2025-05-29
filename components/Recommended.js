@@ -54,7 +54,7 @@ const Recommended = () => {
           // Process the image URLs
           const recommendations = response.data.recommendations.map((item) => ({
             ...item,
-            image: item.image ? `${API_URL}/media/${item.image}`.replace(/\/\/+/g, '/') : null,
+            image: item.image ? `${API_URL}/${item.image}`.replace(/\/\/+/g, '/') : null,
           }));
 
           setPosts(recommendations);
