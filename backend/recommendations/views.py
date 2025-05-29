@@ -16,7 +16,8 @@ def get_recommendations(request):
                                                     .order_by('-timestamp') \
                                                     .values_list('search_query', flat=True)[:50] 
         current_search_history = sorted(list(set(current_search_queries))) 
-
+        print(current_search_history)
+        print(current_search_queries)
 
         latest_recommendation = None
         try:
@@ -39,7 +40,6 @@ def get_recommendations(request):
             print(f"Error during cache lookup/comparison for user {user_id}: {e}. Generating new recommendations.")
             pass 
 
-
         print(f"Generating new recommendations for user {user_id}...")
         recommendations_df = hybrid_recommendation_system(user_id)
 
@@ -51,19 +51,48 @@ def get_recommendations(request):
             data = recommendations_df.to_dict('records')
             print(f"Recommendations generated for user {user_id}.")
 
-        Recommendation.objects.update_or_create(
-            user_id=user_id,
-            defaults={
-                'recommended_items': data,
-                'algorithm_used': 'Hybrid',
-                'cached_search_history': current_search_history, 
-                'created_at': timezone.now() 
-            }
-        )
-        print(f"New recommendations and search history snapshot cached for user {user_id}.")
+        # Fix: Clean up duplicate records first, then create/update
+        try:
+            # Delete all existing recommendations for this user
+            Recommendation.objects.filter(user_id=user_id).delete()
+            
+            # Create new recommendation record
+            Recommendation.objects.create(
+                user_id=user_id,
+                recommended_items=data,
+                algorithm_used='Hybrid',
+                cached_search_history=current_search_history,
+                created_at=timezone.now()
+            )
+            print(f"New recommendations and search history snapshot cached for user {user_id}.")
+            
+        except Exception as e:
+            print(f"Error saving recommendations for user {user_id}: {e}")
+            # Fallback: try to update the latest one if creation fails
+            try:
+                latest_rec = Recommendation.objects.filter(user_id=user_id).latest('created_at')
+                latest_rec.recommended_items = data
+                latest_rec.algorithm_used = 'Hybrid'
+                latest_rec.cached_search_history = current_search_history
+                latest_rec.created_at = timezone.now()
+                latest_rec.save()
+                print(f"Updated existing recommendation for user {user_id} as fallback.")
+            except Exception as fallback_error:
+                print(f"Fallback update also failed for user {user_id}: {fallback_error}")
+                return Response({
+                    'success': False, 
+                    'message': 'Error saving recommendations. Please try again.'
+                }, status=500)
 
-        return Response({'success': True, 'recommendations': data, 'message': 'New recommendations generated.'})
+        return Response({
+            'success': True, 
+            'recommendations': data, 
+            'message': 'New recommendations generated.'
+        })
 
     except Exception as e:
         print(f"An unexpected error occurred in get_recommendations view: {e}")
-        return Response({'success': False, 'error': str(e)}, status=500)
+        return Response({
+            'success': False,
+            'message': 'An error occurred while generating recommendations. Please try again.'
+        }, status=500)
