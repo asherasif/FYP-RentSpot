@@ -3,10 +3,10 @@ import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from "react
 import axios from "axios";
 import { API_URL } from '@env';
 import { AuthContext } from "../context/AuthContext";
-import ProductCard from "./ProductCard"; // Import your ProductCard component
+import ProductCard from "./ProductCard"; 
 import * as Animatable from 'react-native-animatable';
 
-// Zoom-in and zoom-out animations for the trending items
+
 const zoomIn = {
   0: {
     scale: 0.9,
@@ -26,7 +26,7 @@ const zoomOut = {
 };
 
 const Recommended = () => {
-  const { token } = useContext(AuthContext); // Access token from AuthContext
+  const { token } = useContext(AuthContext); 
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
@@ -36,7 +36,7 @@ const Recommended = () => {
     const fetchRecommendedProducts = async () => {
       if (!token) {
         console.log("Token is not available yet. Skipping fetch.");
-        return; // Skip fetching if token is not ready
+        return; 
       }
 
       setLoading(true);
@@ -46,7 +46,7 @@ const Recommended = () => {
 
         const response = await axios.get(`${API_URL}/api/recommendations/getrecommendation/`, {
           headers: {
-            Authorization: `Bearer ${token}`, // Pass token in headers
+            Authorization: `Bearer ${token}`, 
           },
         });
 
@@ -68,7 +68,7 @@ const Recommended = () => {
       }
     };
 
-    // Only fetch recommendations if the token is available
+ 
     if (token) {
       fetchRecommendedProducts();
     }
@@ -92,7 +92,7 @@ const Recommended = () => {
       ) : (
         <FlatList
           data={posts}
-          keyExtractor={(item) => item.id.toString()} // Use the `id` from API response for keyExtractor
+          keyExtractor={(item) => item.id.toString()} 
           renderItem={renderTrendingItem}
           horizontal
           showsHorizontalScrollIndicator={false}

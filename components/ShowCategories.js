@@ -43,7 +43,7 @@ const ShowCategories = ({ categories = [], onSelectCategory }) => {
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.name || item.value}
         contentContainerStyle={{
-          gap: 8, // tighter spacing between items
+          gap: 8, 
         }}
         renderItem={({ item }) => (
           <CategoryButton

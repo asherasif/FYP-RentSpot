@@ -27,7 +27,7 @@ const Notifications = () => {
   const [error, setError] = useState(null);
   const [token, setToken] = useState(null);
 
-  // Initialize token
+
   useEffect(() => {
     const initializeToken = async () => {
       try {
@@ -77,7 +77,7 @@ const Notifications = () => {
     }
   };
 
-  // Fetch notifications when token is available
+
   useEffect(() => {
     if (token) {
       fetchNotifications();
@@ -103,7 +103,7 @@ const Notifications = () => {
         }
       );
 
-      // Update the local state to mark this notification as read
+
       setNotifications(
         notifications.map((notification) =>
           notification.id === notificationId
@@ -130,7 +130,7 @@ const Notifications = () => {
         }
       );
       
-      // Update all notifications to read in local state
+     
       setNotifications(
         notifications.map(n => ({...n, is_read: true}))
       );
@@ -219,7 +219,7 @@ const Notifications = () => {
     </TouchableOpacity>
   );
 
-  // Show loading while initializing
+
   if (!initialized) {
     return (
       <SafeAreaView style={styles.container}>

@@ -29,22 +29,22 @@ const RideHistory = () => {
     try {
       setIsLoading(true);
       
-      // Get bookings with delivery status "delivered"
+     
       const headers = {
-        // Authorization: `Bearer ${token}`, // Commented out to bypass auth
+        
         "Content-Type": "application/json",
       };
 
-      // We'll use both endpoints to get all bookings, then filter for those with delivery_status = "delivered"
+    
       const [incomingResponse, outgoingResponse] = await Promise.all([
         axios.get(`${API_URL}/api/bookings/incomingrequests/`, { headers }),
         axios.get(`${API_URL}/api/bookings/myrequests/`, { headers })
       ]);
 
-      // Combine and filter all bookings to only include those with delivered status
+      
       const allBookings = [...incomingResponse.data, ...outgoingResponse.data];
       
-      // If there's no data from the API, use test data for development
+   
       if (allBookings.length === 0) {
         console.log("No delivery history found, using test data");
         const testDeliveries = [
@@ -67,7 +67,7 @@ const RideHistory = () => {
         ];
         setRideHistory(testDeliveries);
       } else {
-        // Process the API data
+  
         const deliveredBookings = allBookings
           .filter(booking => booking.delivery_status === "delivered")
           .map(booking => ({
@@ -85,14 +85,14 @@ const RideHistory = () => {
     } catch (error) {
       console.error("Error fetching delivery history:", error);
       
-      // Show error message
+
       Alert.alert(
         "Error",
         "Failed to load delivery history. Using test data instead.",
         [{ text: "OK" }]
       );
       
-      // Use test data as fallback
+
       const testDeliveries = [
         {
           id: 1,

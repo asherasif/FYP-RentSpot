@@ -50,7 +50,7 @@ const DisputeResults = () => {
     }
   };
 
-  // Helper function to get status color
+  
   const getStatusColor = (status) => {
     switch (status) {
       case 'resolved':

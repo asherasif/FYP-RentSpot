@@ -48,8 +48,7 @@ const MySavedProducts = () => {
       );
       
       console.log("Saved items response:", JSON.stringify(response.data));
-      
-      // Log each saved item's structure to understand the data
+
       if (response.data && response.data.length > 0) {
         response.data.forEach((savedItem, index) => {
           console.log(`Saved item ${index}:`, {
@@ -81,11 +80,11 @@ const MySavedProducts = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      // Remove from local state - use the item ID for filtering
+      
       setSavedItems(savedItems.filter(savedItem => savedItem.item_details.id !== itemId));
       Alert.alert("Success", "Item removed from saved items");
       
-      // Refresh the list to ensure it's up to date
+
       fetchSavedItems();
     } catch (error) {
       console.error("Error removing item:", error.response ? error.response.data : error.message);

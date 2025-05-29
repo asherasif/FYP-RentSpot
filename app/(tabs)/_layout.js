@@ -10,7 +10,7 @@ const TabIcon = ({ icon, color, name, focused }) => {
       style={{
         alignItems: "center",
         justifyContent: "center",
-        height: 60, // Ensure the icon and text fit within the tab bar height
+        height: 60, 
         marginTop: 18
       }}
     >
@@ -21,17 +21,17 @@ const TabIcon = ({ icon, color, name, focused }) => {
           tintColor: color,
           width: 24,
           height: 24,
-          marginBottom: 2, // Minimized gap between icon and text
+          marginBottom: 2, 
         }}
       />
       <Text
         style={{
           color: color,
-          fontSize: 12, // Font size for the text
-          fontWeight: focused ? "600" : "400", // Bold for focused state
+          fontSize: 12, 
+          fontWeight: focused ? "600" : "400", 
           textAlign: "center",
-          width: 60, // Ensure enough width for long text
-          overflow: "hidden", // Avoid any text overflow
+          width: 60, 
+          overflow: "hidden", 
         }}
       >
         {name}
@@ -49,10 +49,10 @@ const Tabslayout = () => {
           tabBarActiveTintColor: "#ffa001",
           tabBarInactiveTintColor: "#cdcde0",
           tabBarStyle: {
-          backgroundColor: "#161622", // Tab bar background color
+          backgroundColor: "#161622", 
           borderTopWidth: 1,
           borderTopColor: "#ffa001",
-          height: 60, // Adjusted height to fit icon and text properly
+          height: 60, 
           },
         }}
       >

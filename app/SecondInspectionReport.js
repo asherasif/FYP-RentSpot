@@ -45,24 +45,22 @@ const SecondInspectionReport = () => {
   const [success, setSuccess] = useState(false);
   const [existingReportId, setExistingReportId] = useState(null);
 
-  // Handle back button press
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      // Navigate directly to vendorhome instead of going back
+
       router.replace("/vendorhome");
-      return true; // Prevent default behavior
+      return true; 
     });
 
     return () => backHandler.remove();
   }, []);
 
-  // Debug logging
+  
   useEffect(() => {
     console.log("SecondInspectionReport - Received bookingId:", bookingId);
     console.log("SecondInspectionReport - All params:", params);
   }, [bookingId, params]);
 
-  // Check if we have required data
   useEffect(() => {
     if (!bookingId) {
       Alert.alert(
@@ -71,12 +69,11 @@ const SecondInspectionReport = () => {
         [{ text: "Go Back", onPress: () => router.replace("/vendorhome") }]
       );
     } else {
-      // Check if a return report already exists for this booking
+      
       checkExistingReport();
     }
   }, [bookingId]);
 
-  // Check if a return report already exists for this booking
   const checkExistingReport = async () => {
     if (!bookingId || !token) return;
     
@@ -92,14 +89,14 @@ const SecondInspectionReport = () => {
       
       console.log("Existing reports:", response.data);
       
-      // Find a return report for this booking
+      
       const returnReport = response.data.find(report => report.report_type === 'return');
       
       if (returnReport) {
         console.log("Found existing return report:", returnReport);
         setExistingReportId(returnReport.id);
         
-        // Optionally pre-fill the form with existing data
+       
         setForm({
           category: returnReport.overall_condition || "",
           description: returnReport.notes || "",
@@ -159,7 +156,7 @@ const SecondInspectionReport = () => {
     try {
       console.log("Submitting return inspection report for booking ID:", bookingId);
       
-      // Create form data for image upload
+
       const formData = new FormData();
       formData.append('booking_id', bookingId);
       formData.append('report_type', 'return');
@@ -172,7 +169,7 @@ const SecondInspectionReport = () => {
         type: form.image.type
       });
       
-      // Log formData contents for debugging
+    
       console.log("FormData for return inspection report:");
       console.log("booking_id:", bookingId);
       console.log("report_type: return");
@@ -184,7 +181,7 @@ const SecondInspectionReport = () => {
       let response;
       
       if (existingReportId) {
-        // Update existing report
+       
         console.log("Updating existing return report with ID:", existingReportId);
         response = await axios.put(
           `${API_URL}/api/condition_reports/${existingReportId}/`,
@@ -198,7 +195,7 @@ const SecondInspectionReport = () => {
         );
         console.log("Return inspection report updated:", response.data);
       } else {
-        // Submit new report
+      
         response = await axios.post(
           `${API_URL}/api/condition_reports/`,
           formData,
@@ -314,7 +311,7 @@ const SecondInspectionReport = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Submit Button */}
+   
         <CustomButton
           title="Submit Report"
           containerStyles="mt-7"
@@ -322,7 +319,7 @@ const SecondInspectionReport = () => {
           handlePress={handleSubmit}
         />
 
-        {/* Success Modal */}
+  
         <Modal
           visible={success}
           transparent={true}

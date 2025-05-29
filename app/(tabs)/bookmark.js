@@ -17,12 +17,12 @@ const Bookmark = () => {
   const router = useRouter();
   const { token } = useContext(AuthContext);
 
-  // Function to trigger a refresh of bookmarks data
+
   const refreshBookmarks = useCallback(() => {
     setRefreshTrigger(prev => prev + 1);
   }, []);
   
-  // Function to fetch reservations data (similar to MyProductsList.js)
+
   const fetchReservations = useCallback(async () => {
     if (!token) {
       console.error('No auth token found');
@@ -61,7 +61,7 @@ const Bookmark = () => {
     }
   }, [token]);
   
-  // Memoize the fetch function to avoid recreating it on every render
+
   const fetchBookmarks = useCallback(async () => {
     if (!token) {
       console.error('No auth token found');
@@ -69,7 +69,7 @@ const Bookmark = () => {
       return;
     }
 
-    // Rate limiting - prevent fetching more than once every 5 seconds
+
     const now = Date.now();
     if (now - lastFetchTime < 5000 && lastFetchTime !== 0) {
       return;
@@ -84,22 +84,21 @@ const Bookmark = () => {
         'Content-Type': 'application/json'
       };
 
-      // Use Promise.all to fetch both APIs concurrently
+
       const [incomingResponse, myRequestsResponse] = await Promise.all([
         axios.get(`${API_URL}/api/bookings/incomingrequests/`, { headers }),
         axios.get(`${API_URL}/api/bookings/myrequests/`, { headers })
       ]);
       
-      // Process incoming requests to check for expired items (older than 24 hours)
+
       const processedIncomingRequests = incomingResponse.data.map(request => {
         if (request.status === 'pending') {
-          // Check if request is older than 24 hours
+
           const requestDate = new Date(request.created_at || request.request_date || request.date);
           const currentDate = new Date();
           const timeDifference = currentDate - requestDate;
           const hoursDifference = timeDifference / (1000 * 60 * 60);
           
-          // If request is older than 24 hours, mark as expired
           if (hoursDifference > 24) {
             return { ...request, status: 'expired' };
           }
@@ -107,16 +106,14 @@ const Bookmark = () => {
         return request;
       });
 
-      // Process my outgoing requests to check for expired items (older than 24 hours)
       const processedMyRequests = myRequestsResponse.data.map(request => {
         if (request.status === 'pending') {
-          // Check if request is older than 24 hours
+         s
           const requestDate = new Date(request.created_at || request.request_date || request.date);
           const currentDate = new Date();
           const timeDifference = currentDate - requestDate;
           const hoursDifference = timeDifference / (1000 * 60 * 60);
-          
-          // If request is older than 24 hours, mark as expired
+       
           if (hoursDifference > 24) {
             return { ...request, status: 'expired' };
           }
@@ -133,17 +130,16 @@ const Bookmark = () => {
     }
   }, [token, lastFetchTime]);
 
-  // Fetch data when component mounts or when dependencies change
   useEffect(() => {
     fetchBookmarks();
     
-    // Fetch reservations when in approved tab
+
     if (selectedTab === 'approved') {
       fetchReservations();
     }
   }, [fetchBookmarks, fetchReservations, refreshTrigger, selectedTab]);
 
-  // Memoize filtered data to prevent recalculations on every render
+
   const filteredData = useMemo(() => {
     return {
       pendingIncoming: incomingRequests.filter(item => item.status === 'pending'),
@@ -155,17 +151,16 @@ const Bookmark = () => {
     };
   }, [incomingRequests, myRequests]);
 
-  // Safely extract ID from booking object
   const getBookingId = useCallback((item) => {
     return item.id || item.booking_id || item._id || item.bookingId || item.booking;
   }, []);
 
-  // Handle approval of booking requests
+
   const handleApprove = useCallback(async (bookingId) => {
     if (!token || !bookingId) return;
 
     try {
-      // Optimistically update UI
+
       setIncomingRequests(prevRequests => 
         prevRequests.map(request => 
           getBookingId(request) === bookingId ? { ...request, status: 'approved' } : request
@@ -184,17 +179,17 @@ const Bookmark = () => {
       );
     } catch (error) {
       console.error("Error approving booking:", error.message);
-      // Revert optimistic update if the API call failed
+
       refreshBookmarks();
     }
   }, [token, getBookingId, refreshBookmarks]);
 
-  // Handle rejection of booking requests
+
   const handleReject = useCallback(async (bookingId) => {
     if (!token || !bookingId) return;
 
     try {
-      // Optimistically update UI
+     
       setIncomingRequests(prevRequests => 
         prevRequests.map(request => 
           getBookingId(request) === bookingId ? { ...request, status: 'rejected' } : request
@@ -213,17 +208,17 @@ const Bookmark = () => {
       );
     } catch (error) {
       console.error("Error rejecting booking:", error.message);
-      // Revert optimistic update if the API call failed
+
       refreshBookmarks();
     }
   }, [token, getBookingId, refreshBookmarks]);
 
-  // Handle cancellation of booking requests
+
   const handleCancelRequest = useCallback(async (bookingId) => {
     if (!token || !bookingId) return;
 
     try {
-      // Optimistically update UI
+     
       setMyRequests(prevRequests => 
         prevRequests.filter(request => getBookingId(request) !== bookingId)
       );
@@ -239,12 +234,12 @@ const Bookmark = () => {
       );
     } catch (error) {
       console.error("Error cancelling booking:", error.message);
-      // Revert optimistic update if the API call failed
+ 
       refreshBookmarks();
     }
   }, [token, getBookingId, refreshBookmarks]);
 
-  // Function to check if a booking is ready for delivery by fetching details
+
   const checkBookingReadyForDelivery = useCallback(async (bookingId) => {
     if (!token || !bookingId) return false;
     
@@ -260,9 +255,9 @@ const Bookmark = () => {
         { headers }
       );
 
-      return true; // If API call succeeds, booking is ready for delivery
+      return true; 
     } catch (error) {
-      // If we get a 400 error with specific message, booking isn't ready
+ 
       if (error.response?.status === 400) {
         console.log("Booking not ready:", error.response.data.message);
       } else {
@@ -272,7 +267,7 @@ const Bookmark = () => {
     }
   }, [token]);
 
-  // Function to fetch detailed reservation data for a booking before payment
+
   const fetchReservationDetails = useCallback(async (bookingId) => {
     if (!token || !bookingId) {
       console.error('Missing token or booking ID for fetching reservation details');
@@ -285,7 +280,7 @@ const Bookmark = () => {
         'Content-Type': 'application/json'
       };
 
-      // Call the reservations API to get all reservations
+
       const response = await axios.get(
         `${API_URL}/api/bookings/reservations/`,
         { headers }
@@ -293,7 +288,7 @@ const Bookmark = () => {
       
       console.log("All reservations retrieved:", response.data);
       
-      // Find the specific reservation matching our booking ID
+    
       const bookingDetails = response.data.find(reservation => reservation.id === Number(bookingId));
       
       if (bookingDetails) {
@@ -309,7 +304,6 @@ const Bookmark = () => {
     }
   }, [token]);
 
-  // Memoized card components using React.memo
   const IncomingRequestCard = memo(({ item }) => {
     const title = item.item_title || "Untitled Item";
     const renterName = item.renter_name || "Unknown User";
@@ -367,7 +361,7 @@ const Bookmark = () => {
                 id: getBookingId(item),
                 total_price: item.total_price || 1500
               });
-              // Use URL parameter approach for consistent routing
+             
               router.push(`/Paymentgateway?bookingId=${getBookingId(item)}&amount=${item.total_price || 1500}`);
             }}
           >
@@ -385,7 +379,7 @@ const Bookmark = () => {
     const imageUrl = item.image_url || 'https://via.placeholder.com/150';
     const bookingId = getBookingId(item);
     
-    // Format the created date for display
+
     const createdDate = useMemo(() => {
       if (!item.created_at) return "Not specified";
       const date = new Date(item.created_at);
@@ -439,7 +433,7 @@ const Bookmark = () => {
                 id: getBookingId(item),
                 total_price: item.total_price || 1500
               });
-              // Use URL parameter approach for consistent routing
+   
               router.push(`/Paymentgateway?bookingId=${getBookingId(item)}&amount=${item.total_price || 1500}`);
             }}
           >
@@ -450,7 +444,7 @@ const Bookmark = () => {
     );
   });
 
-  // Tab selection handlers
+
   const handleRequestedTab = useCallback(() => {
     setSelectedTab('requested');
   }, []);
@@ -459,12 +453,11 @@ const Bookmark = () => {
     setSelectedTab('approved');
   }, []);
 
-  // Push to payment gateway - memoized handler
+
   const handlePushToPayment = useCallback(() => {
     router.push('Paymentgateway');
   }, [router]);
 
-  // Memoized reservation card component (similar to MyProductsList.js)
   const ReservationCard = memo(({ item }) => {
     console.log("Rendering Reservation Card with item:", {
       id: item.id,
@@ -512,7 +505,7 @@ const Bookmark = () => {
               total_price: item.total_price,
               item_name: item.item_name
             });
-            // Here we use the URL string format for passing parameters which works with Expo Router
+            
             router.push(`/Paymentgateway?bookingId=${item.id}&amount=${item.total_price}`);
           }}
         >
@@ -577,12 +570,12 @@ const Bookmark = () => {
                 ))
               )}
               
-              {/* Expired Requests Section */}
+
               {(filteredData.expiredIncoming.length > 0 || filteredData.expiredOutgoing.length > 0) && (
                 <>
                   <Text style={[styles.sectionTitle, styles.sectionSpacing]}>Expired Requests</Text>
                   
-                  {/* Incoming expired requests */}
+             
                   {filteredData.expiredIncoming.length > 0 && (
                     <>
                       <Text style={styles.subSectionTitle}>Incoming Expired</Text>
@@ -595,7 +588,7 @@ const Bookmark = () => {
                     </>
                   )}
                   
-                  {/* Outgoing expired requests */}
+          
                   {filteredData.expiredOutgoing.length > 0 && (
                     <>
                       <Text style={[styles.subSectionTitle, filteredData.expiredIncoming.length > 0 ? styles.sectionSpacing : null]}>
@@ -614,7 +607,7 @@ const Bookmark = () => {
             </>
           ) : (
             <>
-              {/* Approved Items Section */}
+              
               <Text style={styles.sectionTitle}>Approved Items</Text>
               {loading ? (
                 <View style={styles.loadingContainer}>

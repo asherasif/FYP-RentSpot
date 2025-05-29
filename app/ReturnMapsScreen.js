@@ -48,18 +48,18 @@ const ReturnMapsScreen = () => {
     longitude: animatedLongitude,
   }), [animatedLatitude, animatedLongitude]);
 
-  // Handle back button press
+  
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      // Navigate directly to home instead of going back
+ 
       router.replace("/home");
-      return true; // Prevent default behavior
+      return true; 
     });
 
     return () => backHandler.remove();
   }, []);
 
-  // Fetch booking details only once
+  
   useEffect(() => {
     const fetchDetails = async () => {
       if (!bookingId || !token || apiCallAttempted) return;
@@ -76,7 +76,7 @@ const ReturnMapsScreen = () => {
         console.log("Booking details loaded:", response.data);
         setBookingDetails(response.data);
         
-        // Set origin location from booking details
+   
         if (response.data.origin_location && 
             response.data.origin_location.latitude && 
             response.data.origin_location.longitude) {
@@ -109,7 +109,7 @@ const ReturnMapsScreen = () => {
     fetchDetails();
   }, [bookingId, token, apiCallAttempted]);
 
-  // Get user's current location
+  
   useEffect(() => {
     (async () => {
       try {
@@ -126,11 +126,10 @@ const ReturnMapsScreen = () => {
     })();
   }, []);
 
-  // Build route from origin to userLocation
   useEffect(() => {
     const fetchRoute = async () => {
       if (!userLocation || !origin) return;
-      // For return ride, swap the origin and destination since we're going from user to owner
+   
       const url = `https://router.project-osrm.org/route/v1/driving/${userLocation.longitude},${userLocation.latitude};${origin.longitude},${origin.latitude}?overview=full&geometries=geojson`;
       try {
         const res = await fetch(url);
@@ -141,19 +140,18 @@ const ReturnMapsScreen = () => {
           );
           setRoute(coordinates);
         } else {
-          // Fallback to generated route
+          
           generateFallbackRoute(userLocation, origin);
         }
       } catch (err) {
         console.error("Failed to fetch route:", err);
-        // Fallback to generated route
+
         generateFallbackRoute(userLocation, origin);
       }
     };
     fetchRoute();
   }, [userLocation, origin]);
 
-  // Generate fallback route
   const generateFallbackRoute = (start, end) => {
     if (!start || !end) return;
     
@@ -173,12 +171,12 @@ const ReturnMapsScreen = () => {
     setRoute(points);
   };
 
-  // Animate rider movement
+
   useEffect(() => {
     if (route.length >= 2 && !success && bookingDetails?.return_status === 'in_return') {
       latestIndexRef.current = 0;
       
-      // Initialize animated values from user location (first point in route)
+      
       if (route[0]) {
         animatedLatitude.setValue(route[0].latitude);
         animatedLongitude.setValue(route[0].longitude);
@@ -231,7 +229,7 @@ const ReturnMapsScreen = () => {
 
   const logo = { uri: "https://cdn-icons-png.flaticon.com/512/854/854866.png" };
 
-  // Show loading state
+
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-primary">
@@ -241,7 +239,7 @@ const ReturnMapsScreen = () => {
     );
   }
 
-  // Show error state
+
   if (error) {
     return (
       <View className="flex-1 justify-center items-center bg-primary p-4">
@@ -269,7 +267,7 @@ const ReturnMapsScreen = () => {
         <CustomButton 
           title="Refresh Status" 
           handlePress={() => {
-            setApiCallAttempted(false); // Allow one more API call
+            setApiCallAttempted(false); 
             setLoading(true);
             axios.get(`${API_URL}/api/bookings/delivery-details/${bookingId}/`, 
               { headers: { Authorization: `Bearer ${token}` } })
@@ -291,7 +289,7 @@ const ReturnMapsScreen = () => {
     );
   }
 
-  // Only show map/animation if return_status is 'in_return'
+
   if (bookingDetails?.return_status !== 'in_return') {
     return (
       <View className="flex-1 justify-center items-center bg-primary p-4">
@@ -312,14 +310,14 @@ const ReturnMapsScreen = () => {
           <MapView
             style={{ width: "100%", height: 300, borderRadius: 20 }}
             region={{
-              // Center the map between user and origin for better view of the route
+              
               latitude: userLocation ? 
                 (userLocation.latitude + (origin?.latitude || 0)) / 2 : 
                 (origin?.latitude || 25.0700),
               longitude: userLocation ? 
                 (userLocation.longitude + (origin?.longitude || 0)) / 2 : 
                 (origin?.longitude || 67.2840),
-              latitudeDelta: 0.1, // Increase zoom out to see both points
+              latitudeDelta: 0.1, 
               longitudeDelta: 0.1,
             }}
           >
@@ -421,7 +419,6 @@ const ReturnMapsScreen = () => {
         </View>
       </ScrollView>
 
-      {/* Modal when success - using React Native Modal */}
       <Modal
         visible={success}
         transparent={true}

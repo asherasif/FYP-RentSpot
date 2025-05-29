@@ -8,7 +8,7 @@ import { Link, router } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from '@env';
-import { AuthContext } from '../../context/AuthContext' // Import AuthContext
+import { AuthContext } from '../../context/AuthContext'
 
 const SignIn = () => {
   const [form, setForm] = useState({
@@ -21,17 +21,17 @@ const SignIn = () => {
   const [otp, setOtp] = useState("");
   const [isVerifyingOTP, setIsVerifyingOTP] = useState(false);
   const [isResendingOTP, setIsResendingOTP] = useState(false);
-  const [otpTimer, setOtpTimer] = useState(300); // 5 minutes in seconds
+  const [otpTimer, setOtpTimer] = useState(300); 
   const [pendingEmail, setPendingEmail] = useState("");
   
-  const { login, user } = useContext(AuthContext); // Get user info too
+  const { login, user } = useContext(AuthContext); 
 
-  // useEffect to check if user is already logged in
+
   useEffect(() => {
     const checkIfLoggedIn = async () => {
       const token = await AsyncStorage.getItem("accessToken");
       if (token) {
-        // Get userType from storage to determine redirect
+       
         const userTypeFromStorage = await AsyncStorage.getItem("userType");
         if (userTypeFromStorage === "Vendor") {
           router.push("/vendorhome");
@@ -41,13 +41,13 @@ const SignIn = () => {
       }
     };
 
-    checkIfLoggedIn(); // Run this on component mount
+    checkIfLoggedIn(); 
   }, []);
 
-  // Redirect based on user type when user state updates
+ 
   useEffect(() => {
     if (user) {
-      // Redirect based on user type
+   
       if (user.userType === "Vendor") {
         console.log("Redirecting to vendor home page");
         router.push("/vendorhome");
@@ -58,7 +58,7 @@ const SignIn = () => {
     }
   }, [user]);
 
-  // OTP Timer countdown
+
   useEffect(() => {
     let interval = null;
     if (showOTPScreen && otpTimer > 0) {
@@ -81,7 +81,7 @@ const SignIn = () => {
     console.log("Submitting login request");
     setIsSubmitting(true);
     try {
-      // Make API request to login
+   
       const response = await axios.post(`${API_URL}/api/users/login/`, {
         email: form.email,
         password: form.password,
@@ -90,31 +90,31 @@ const SignIn = () => {
       console.log("Response received:", response.data);
 
       if (response.status === 200) {
-        // Store userType if available in the response
+      
         if (response.data.user_type) {
           await AsyncStorage.setItem("userType", response.data.user_type);
         }
         
-        // Use login function from AuthContext and pass the full response data
-        await login(response.data); // Pass entire response.data which contains access and refresh tokens
+     
+        await login(response.data); 
 
-        // Show success alert
+    
         Alert.alert("Success", "Login successful!");
         
-        // Redirection will happen in the useEffect that watches the user state
+       
       } else {
         Alert.alert("Error", "Invalid credentials. Please try again.");
       }
     } catch (error) {
-      console.log("Error received:", error); // Log error for debugging
+      console.log("Error received:", error); 
       
-      // Check if this is an OTP verification required error
+
       if (error.response && error.response.status === 403 && error.response.data.requires_otp) {
         setPendingEmail(form.email);
         setShowOTPScreen(true);
-        setOtpTimer(300); // Reset timer to 5 minutes
+        setOtpTimer(300); 
         
-        // Automatically send OTP
+   
         sendOTPForLogin(form.email);
         
         Alert.alert(
@@ -177,7 +177,7 @@ const SignIn = () => {
       if (response.status === 200) {
         console.log("OTP verification response:", response.data);
         
-        // Auto-login after successful verification
+        
         if (response.data.access && response.data.refresh) {
           await login(response.data);
           Alert.alert(
@@ -187,7 +187,7 @@ const SignIn = () => {
               {
                 text: "Continue",
                 onPress: () => {
-                  // Redirect based on user type
+                e
                   if (response.data.user?.user_type === "Vendor") {
                     router.push("/vendorhome");
                   } else {
@@ -240,8 +240,8 @@ const SignIn = () => {
       });
 
       if (response.status === 200) {
-        setOtpTimer(300); // Reset timer to 5 minutes
-        setOtp(""); // Clear current OTP input
+        setOtpTimer(300); 
+        setOtp(""); 
         Alert.alert("Success", "New OTP sent to your email!");
       } else {
         Alert.alert("Error", "Failed to resend OTP. Please try again.");
@@ -322,7 +322,7 @@ const SignIn = () => {
               handlePress={resendOTP}
               containerStyles="mt-4 bg-gray-600"
               isLoading={isResendingOTP}
-              disabled={otpTimer > 240} // Allow resend only after 1 minute
+              disabled={otpTimer > 240} 
             />
 
             <CustomButton
@@ -384,7 +384,7 @@ const SignIn = () => {
               })
             }
             otherStyles="mt-7"
-            secureTextEntry={true} // Hide password input
+            secureTextEntry={true} 
           />
 
           <CustomButton

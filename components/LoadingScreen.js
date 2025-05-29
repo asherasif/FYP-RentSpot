@@ -4,13 +4,11 @@ import { View, Text, ActivityIndicator, StyleSheet, Image } from 'react-native';
 const LoadingScreen = () => {
   return (
     <View style={styles.container}>
-      {/* Optional App Logo */}
+
       <Image source={require('../assets/images/RLogo.png')} style={styles.logo} resizeMode="contain" />
+     <Text style={styles.text}>Getting things ready...</Text>
 
-      {/* Loading Text */}
-      <Text style={styles.text}>Getting things ready...</Text>
-
-      {/* Spinner */}
+  
       <ActivityIndicator size="large" color="#3498db" />
     </View>
   );
@@ -21,7 +19,7 @@ export default LoadingScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff', // or your brand color
+    backgroundColor: '#fff', 
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,

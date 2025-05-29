@@ -36,7 +36,6 @@ import {
       }
   
       try {
-        // Use the correct endpoint for getting all items
         const response = await axios.get(`${API_URL}/api/items/getallitems/`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -44,7 +43,7 @@ import {
         });
   
         if (response?.data) {
-          // Filter items by category client-side
+
           const filteredItems = response.data.filter(
             (item) => item.category && item.category.includes(categoryName)
           );

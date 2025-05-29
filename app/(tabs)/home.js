@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import React, { useState, useEffect, useContext, useMemo, useRef } from 'react'; // Import useRef
+import React, { useState, useEffect, useContext, useMemo, useRef } from 'react'; 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 import { router } from 'expo-router';
@@ -29,7 +29,7 @@ import {
 
 import logo from '../../assets/images/RLogo.png';
 import Search from '../../components/Search';
-import Recommended from '../../components/Recommended'; // Assuming this component exists
+import Recommended from '../../components/Recommended'; 
 import EmptyState from '../../components/EmptyState';
 import ProductCard from '../../components/ProductCard';
 import ShowCategories from '../../components/ShowCategories';
@@ -57,7 +57,7 @@ const Home = () => {
   const [exploreItems, setExploreItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
-  // NEW STATE: A counter to trigger Recommended component refresh
+
   const [recommendationsRefreshKey, setRecommendationsRefreshKey] = useState(0);
 
   const fetchUnreadNotificationCount = async () => {
@@ -99,7 +99,7 @@ const Home = () => {
     if (token) {
       fetchExploreItems();
       fetchUnreadNotificationCount();
-      // On initial load, also trigger recommendations fetch
+
       setRecommendationsRefreshKey(prevKey => prevKey + 1);
     }
   }, [token]);
@@ -113,7 +113,7 @@ const Home = () => {
     await Promise.all([
       fetchExploreItems(),
       fetchUnreadNotificationCount(),
-      // NEW: Increment key to trigger Recommended component refresh
+     
       setRecommendationsRefreshKey(prevKey => prevKey + 1)
     ]);
     setRefreshing(false);
@@ -121,7 +121,7 @@ const Home = () => {
 
   const ListHeader = useMemo(() => (
     <View className="my-6 px-4 space-y-6">
-      {/* Header Row */}
+
       <View className="flex-row justify-between items-center mb-4">
         <View className="flex-row items-center gap-x-4 flex-1">
           <View>
@@ -163,13 +163,13 @@ const Home = () => {
 
       <View className="w-full flex-1 pt-2 pb-4">
         <Text className="text-lg font-pregular mb-3 text-white">Recommended Items</Text>
-        {/* NEW: Pass the recommendationsRefreshKey to Recommended */}
+      
         <Recommended key={recommendationsRefreshKey} />
       </View>
 
       <Text className="text-lg font-pregular mb-1 text-white">Explore Items</Text>
     </View>
-  ), [user?.username, notificationCount, recommendationsRefreshKey]); // Add recommendationsRefreshKey to useMemo dependencies
+  ), [user?.username, notificationCount, recommendationsRefreshKey]); 
 
   return (
     <SafeAreaView className="bg-primary h-full">

@@ -55,12 +55,12 @@ const Riderscreen = () => {
     longitude: animatedLongitude,
   }), [animatedLatitude, animatedLongitude]);
 
-  // Handle back button press
+
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      // Navigate directly to home instead of going back
+
       router.replace("/home");
-      return true; // Prevent default behavior
+      return true; 
     });
 
     return () => backHandler.remove();
@@ -97,7 +97,7 @@ const Riderscreen = () => {
         setError("Authentication token not found. Please login and try again.");
         setIsLoading(false);
       } else if (apiCallAttempted) {
-        // Already attempted, don't try again unless explicitly refreshed
+     
         return;
       }
       return;
@@ -164,7 +164,7 @@ const Riderscreen = () => {
   const onRefresh = () => {
     setRefreshing(true);
     effectRan.current = false;
-    setApiCallAttempted(false); // Allow one more API call
+    setApiCallAttempted(false); 
     fetchBookingDetails();
   };
 
@@ -488,7 +488,7 @@ const Riderscreen = () => {
                 } catch (error) {
                   console.error("Error updating delivery status:", error);
                   
-                  // Continue the flow anyway for testing/development
+                  
                   console.log("Using simulation fallback due to API error");
                   setSuccess(false);
                   setItemReceived(true);

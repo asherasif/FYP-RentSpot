@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, TextInput, StyleSheet, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ProductCard from "../../components/ProductCard"; // Import ProductCard component
+import ProductCard from "../../components/ProductCard"; 
 
-// Mock Product Data
 const mockProducts = [
   {
     id: "1",
@@ -38,21 +37,20 @@ const mockProducts = [
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 const Search = () => {
-  const [query, setQuery] = useState(""); // Local state for search query
-  const [products, setProducts] = useState(mockProducts); // Local state for filtered products (default to all products)
+  const [query, setQuery] = useState(""); 
+  const [products, setProducts] = useState(mockProducts); 
 
-  // Update products based on the query
   useEffect(() => {
     handleSearch(query);
   }, [query]);
 
   const handleSearch = (searchTerm) => {
     if (!searchTerm.trim()) {
-      setProducts(mockProducts); // If query is empty, show all products
+      setProducts(mockProducts); 
       return;
     }
 
-    // Filter products matching the query
+
     const filteredProducts = mockProducts.filter((product) =>
       product.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -61,7 +59,7 @@ const Search = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Search Input */}
+  
       <View style={styles.header}>
         <TextInput
           style={styles.searchInput}
@@ -72,10 +70,10 @@ const Search = () => {
         />
       </View>
 
-      {/* Product List */}
+ 
       <FlatList
-        data={products} // Render filtered products
-        keyExtractor={(item) => item.id} // Use product ID as key
+        data={products} 
+        keyExtractor={(item) => item.id} 
         renderItem={({ item }) => (
           <View style={styles.cardContainer}>
             <ProductCard product={item} />
@@ -123,9 +121,9 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   cardContainer: {
-    width: SCREEN_WIDTH * 0.8, // 80% of the screen width
-    alignSelf: "center", // Center the card horizontally
-    marginVertical: 8, // Add vertical spacing between cards
+    width: SCREEN_WIDTH * 0.8, 
+    alignSelf: "center",
+    marginVertical: 8, 
   },
   emptyState: {
     alignItems: "center",
