@@ -30,7 +30,7 @@ const VendorHome = () => {
     <SafeAreaView className="bg-primary h-full">
       <ScrollView showsVerticalScrollIndicator={false}>
         <View className="px-4 py-6 space-y-6">
-          {/* Header */}
+       
           <View className="flex-row justify-between items-center">
             <View>
               <Text className="font-pmedium text-sm text-gray-100">Welcome Vendor!</Text>
@@ -43,7 +43,7 @@ const VendorHome = () => {
               </Text>
             </View>
 
-            {/* Notification Bell */}
+
             <TouchableOpacity
               onPress={() => router.push("/notifications")}
               className="ml-2 mt-3"
@@ -51,7 +51,7 @@ const VendorHome = () => {
               <Bell color="white" size={24} />
             </TouchableOpacity>
 
-            {/* Logo */}
+        
             <Image
               source={logo}
               className="h-[55px]"
@@ -60,7 +60,7 @@ const VendorHome = () => {
             />
           </View>
 
-          {/* Vendor Specific Actions */}
+    
           <View className="space-y-4">
             <TouchableOpacity
               className="bg-blue-500 rounded-xl p-5 items-center"

@@ -16,11 +16,6 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Fontisto from "react-native-vector-icons/Fontisto";
 
 
-// Uncomment these imports if using external components
-// import MapView, { Marker } from "react-native-maps";
-// import Ratings from "../components/Ratings";
-// import Reviews from "../components/Reviews";
-// import RenterProfile from "./RenterProfile";
 
 const { width } = Dimensions.get("window");
 
@@ -28,10 +23,10 @@ const ProductDetails = (product) => {
   const router = useRouter();
   console.log(product);
   const [userEmail] = useState("dummyuser@example.com");
-  const [displayPrice, setDisplayPrice] = useState(100); // Default price
+  const [displayPrice, setDisplayPrice] = useState(100); 
   const [isSaved, setIsSaved] = useState(false);
 
-  // Dummy product data
+
   
   const data = product.imageIds;
   const [buttonGroup, setButtonGroup] = useState("");

@@ -26,13 +26,13 @@ const StripePaymentGateway = () => {
   const [bookingId, setBookingId] = useState(null);
   const { confirmPayment } = useConfirmPayment();
   
-  // Get URL parameters using useLocalSearchParams
+
   const params = useLocalSearchParams();
   
-  // Use a ref to track if parameters have been extracted
+
   const paramsExtracted = useRef(false);
 
-  // Verify Stripe initialization
+
   useEffect(() => {
     console.log("=== STRIPE INITIALIZATION VERIFICATION ===");
     console.log("Stripe Publishable Key:", STRIPE_KEY ? "Available" : "Not Available");
@@ -47,20 +47,19 @@ const StripePaymentGateway = () => {
     console.log("Stripe React Native Integration Status:", confirmPayment ? "Working" : "Not Working");
   }, []);
 
-  // Retrieve bookingId and amount from URL parameters - only once
+
   useEffect(() => {
-    // Skip if parameters have already been extracted
+    
     if (paramsExtracted.current) return;
     
     console.log("Payment Gateway received local search params:", params);
-    
-    // Extract parameters directly from useLocalSearchParams hook
+   
     const urlBookingId = params.bookingId;
     const urlAmount = params.amount;
     
     console.log("Extracted URL parameters:", { urlBookingId, urlAmount });
     
-    // Check if we have both required parameters
+   
     if (!urlBookingId || !urlAmount) {
       console.error("Missing required parameters:", { urlBookingId, urlAmount });
       Alert.alert(
@@ -71,16 +70,16 @@ const StripePaymentGateway = () => {
       return;
     }
     
-    // Set booking ID from URL parameters
+   
     console.log("Setting bookingId from URL:", urlBookingId);
     setBookingId(urlBookingId);
     
-    // Set payment amount from URL parameters
+
     const parsedAmount = parseFloat(urlAmount);
     console.log("Setting amount from URL:", parsedAmount);
     setPaymentAmount(parsedAmount);
     
-    // Pre-fill email from user context if available
+
     if (user?.email) {
       setEmail(user.email);
     }
@@ -89,7 +88,7 @@ const StripePaymentGateway = () => {
       setFullName(user.full_name);
     }
     
-    // Mark parameters as extracted to prevent repeated calls
+
     paramsExtracted.current = true;
   }, [params, user, router]);
 
@@ -113,13 +112,12 @@ const StripePaymentGateway = () => {
         return;
       }
       
-      // Check if using test mode
+
       const isTestKey = STRIPE_KEY.startsWith('pk_test_');
       console.log("✅ Using Stripe Test Mode:", isTestKey ? "Yes" : "No");
       console.log("⚠️ Make sure you're viewing the correct area in Stripe Dashboard:", 
                  isTestKey ? "TEST mode" : "LIVE mode");
-      
-      // Check backend Stripe configuration
+
       try {
         console.log("Checking backend Stripe configuration...");
         const headers = {
@@ -135,7 +133,7 @@ const StripePaymentGateway = () => {
         console.log("✅ Backend Stripe Configuration:", response.data);
         console.log("✅ Backend Publishable Key:", response.data.publishableKey ? "Available" : "Not Available");
         
-        // Compare keys for debugging
+
         if (response.data.publishableKey && STRIPE_KEY) {
           const backendKeyStart = response.data.publishableKey.substring(0, 10);
           const frontendKeyStart = STRIPE_KEY.substring(0, 10);
@@ -148,10 +146,10 @@ const StripePaymentGateway = () => {
           }
         }
         
-        // Make a test call to get currency configuration
+
         try {
           console.log("Checking currency configuration...");
-          // Create a minimal payment intent to check currency
+      
           const testResponse = await axios.post(
             `${API_URL}/api/payments/create-payment-intent/`,
             { 
@@ -163,12 +161,11 @@ const StripePaymentGateway = () => {
             },
             { headers }
           );
-          
-          // Check if we get a response with a clientSecret
+      
           if (testResponse.data && testResponse.data.clientSecret) {
             console.log("✅ Successfully created test payment intent");
             
-            // Check if we can extract the PI ID
+            
             try {
               const testPiId = testResponse.data.clientSecret.split('_secret_')[0];
               console.log("✅ Test Payment Intent ID:", testPiId);
@@ -196,7 +193,7 @@ const StripePaymentGateway = () => {
           if (error.response && error.response.data) {
             console.log("Error details:", error.response.data);
             
-            // Check for currency issues
+            
             if (error.response.data.toString().includes("currency")) {
               console.error("❌ POSSIBLE CURRENCY MISMATCH DETECTED!");
               console.log("⚠️ Your frontend is using 'aed' but backend might be using a different currency");
@@ -221,7 +218,6 @@ const StripePaymentGateway = () => {
     }
   };
 
-  // Validate fields before payment
   const validateFields = (isCardPayment = false) => {
     console.log("Validating fields with bookingId:", bookingId);
     console.log("Current payment amount:", paymentAmount);
@@ -287,7 +283,7 @@ const StripePaymentGateway = () => {
     return true;
   };
   
-  // Email validation function
+ 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
@@ -413,14 +409,14 @@ const StripePaymentGateway = () => {
       
       console.log("Cash payment response:", response.data);
       
-      // If we get any response with status 200, consider it successful
+          
       if (response.status === 200) {
         const paymentId = response.data?.id || response.data?.payment_id;
         if (paymentId) {
           setPaymentId(paymentId);
           await updatePaymentStatus(paymentId);
         }
-        // Show success modal regardless of whether we got an ID
+      
         setSuccess(true);
       } else {
         Alert.alert("Error", "Failed to create payment record.");
@@ -497,7 +493,7 @@ const StripePaymentGateway = () => {
       <Text className="text-3xl font-bold text-white mb-8 text-center">Payment Details</Text>
       <Image source={pathImage} className="w-[236px] h-[1100px] absolute -bottom-0 right-16" resizeMode="contain" />
 
-      {/* Debug button for Stripe verification (only in development) */}
+     
       {__DEV__ && (
         <TouchableOpacity 
           onPress={testStripeIntegration}

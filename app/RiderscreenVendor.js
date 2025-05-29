@@ -53,7 +53,7 @@ const RiderscreenVendor = () => {
     longitude: animatedLongitude,
   }), [animatedLatitude, animatedLongitude]);
 
-  // Log the bookingId only once
+
   useEffect(() => {
     if (!paramsLogged.current && bookingId) {
       console.log("RiderscreenVendor received bookingId:", bookingId);
@@ -62,7 +62,6 @@ const RiderscreenVendor = () => {
     }
   }, [bookingId, isReturnRide]);
 
-  // Request location permissions and get user location
   useEffect(() => {
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -78,7 +77,6 @@ const RiderscreenVendor = () => {
     })();
   }, []);
 
-  // Fetch delivery details 
   const fetchDeliveryDetails = async () => {
     if (!bookingId) {
       setError("Missing booking ID. Please go back and try again.");
@@ -106,7 +104,7 @@ const RiderscreenVendor = () => {
       const deliveryStatus = response.data.delivery_status || 'pending';
       setDeliveryStatus(deliveryStatus);
       
-      // Set origin location from booking details
+     
       if (response.data.origin_location && 
           response.data.origin_location.latitude && 
           response.data.origin_location.longitude) {
@@ -138,8 +136,7 @@ const RiderscreenVendor = () => {
     } catch (err) {
       console.error("Error fetching delivery details:", err.message);
       console.error("Error details:", err.response?.status, err.response?.data);
-      
-      // More helpful error message
+
       let errorMessage = "Failed to fetch delivery details. ";
       
       if (err.response?.status === 403) {
@@ -156,7 +153,7 @@ const RiderscreenVendor = () => {
       setLoading(false);
       setRefreshing(false);
       
-      // If authorization fails, fallback to dummy data to allow testing
+     
       if (err.response?.status === 403) {
         Alert.alert(
           "Using Test Data",
@@ -165,7 +162,7 @@ const RiderscreenVendor = () => {
             {
               text: "OK",
               onPress: () => {
-                // Use dummy data
+               
                 setBookingDetails({
                   item_title: "Test Product",
                   rentee_name: "Test User",
@@ -177,7 +174,7 @@ const RiderscreenVendor = () => {
                   delivery_status: "in_delivery"
                 });
                 
-                // Set dummy location
+               
                 setOrigin({
                   latitude: 25.0700,
                   longitude: 67.2840,
@@ -188,10 +185,7 @@ const RiderscreenVendor = () => {
                 setLoading(false);
                 setDeliveryStatus('in_delivery');
                 
-                // Remove automatic success modal timing in test data section
-                // setTimeout(() => {
-                //   setSuccess(true);
-                // }, 10000);
+                
               }
             }
           ]
@@ -210,7 +204,7 @@ const RiderscreenVendor = () => {
     fetchDeliveryDetails();
   };
 
-  // Fetch route from API
+
   useEffect(() => {
     const fetchRoute = async () => {
       if (!userLocation || !origin) return;
@@ -227,12 +221,12 @@ const RiderscreenVendor = () => {
           );
           setRoute(coordinates);
         } else {
-          // Fallback to generated route
+     
           generateFallbackRoute(origin, userLocation || { latitude: 25.0800, longitude: 67.2990 });
         }
       } catch (err) {
         console.error("Error fetching route:", err);
-        // Fallback to generated route
+
         generateFallbackRoute(origin, userLocation || { latitude: 25.0800, longitude: 67.2990 });
       }
     };
@@ -240,7 +234,7 @@ const RiderscreenVendor = () => {
     fetchRoute();
   }, [userLocation, origin]);
 
-  // Generate fallback route
+
   const generateFallbackRoute = (start, end) => {
     if (!start || !end) return;
     
@@ -260,12 +254,10 @@ const RiderscreenVendor = () => {
     setRoute(points);
   };
 
-  // Animate rider movement
   useEffect(() => {
     if (route.length >= 2 && !success && deliveryStatus === 'in_delivery') {
       latestIndexRef.current = 0;
-      
-      // Initialize animated values
+
       animatedLatitude.setValue(route[0].latitude);
       animatedLongitude.setValue(route[0].longitude);
       
@@ -314,7 +306,7 @@ const RiderscreenVendor = () => {
 
   const logo = { uri: "https://cdn-icons-png.flaticon.com/512/854/854866.png" };
 
-  // Render the waiting content when status is pending
+
   const renderWaitingContent = () => {
     return (
       <View className="flex-1 justify-center items-center bg-primary p-4">
@@ -342,7 +334,7 @@ const RiderscreenVendor = () => {
     );
   };
 
-  // Accept delivery request handler
+
   const handleAcceptDelivery = async () => {
     try {
       await axios.patch(
@@ -369,7 +361,7 @@ const RiderscreenVendor = () => {
     }
   };
 
-  // Loading state
+
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-primary">
@@ -379,7 +371,6 @@ const RiderscreenVendor = () => {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <View className="flex-1 justify-center items-center bg-primary p-4">
@@ -390,7 +381,7 @@ const RiderscreenVendor = () => {
     );
   }
 
-  // Pending request state
+
   if (deliveryStatus === 'pending') {
     return (
       <View className="flex-1 justify-center items-center bg-primary p-4">
@@ -524,13 +515,12 @@ const RiderscreenVendor = () => {
             disabled={!itemReceived}
             containerStyles={`mt-2 w-full ${itemReceived ? "bg-orange-500" : "bg-orange-300"}`}
             handlePress={() => {
-              // Check if this is a return ride or an initial delivery
-              // Use either the URL param or the booking details
+
               const isReturn = isReturnRide || bookingDetails?.return_status === 'in_return';
               
               if (itemReceived) {
                 if (isReturn) {
-                  // For return rides, navigate to SecondInspectionReport
+                  
                   console.log("Navigating to SecondInspectionReport for return ride");
                   const bookingIdToUse = bookingDetails?.booking_id || bookingId;
                   router.push({
@@ -538,7 +528,7 @@ const RiderscreenVendor = () => {
                     params: { bookingId: bookingIdToUse }
                   });
                 } else {
-                  // For initial delivery rides, navigate to InspectionReport
+                 
                   console.log("Navigating to InspectionReport for initial delivery");
                   const bookingIdToUse = bookingDetails?.booking_id || bookingId;
                   router.push({
@@ -554,7 +544,7 @@ const RiderscreenVendor = () => {
         </View>
       </ScrollView>
 
-      {/* Modal when success */}
+
       <Modal
         transparent={true}
         visible={success}
@@ -610,7 +600,7 @@ const RiderscreenVendor = () => {
                 } catch (error) {
                   console.error("Error marking delivery as completed:", error);
                   
-                  // Continue the flow anyway for testing/development
+        
                   console.log("Using simulation fallback due to API error");
                   setSuccess(false);
                   setItemReceived(true);

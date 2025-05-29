@@ -34,13 +34,13 @@ const ProductDetails = () => {
   const [displayPrice, setDisplayPrice] = useState(0);
   const [selectedPeriod, setSelectedPeriod] = useState("day");
   const [isSaved, setIsSaved] = useState(false);
-  const [aiScore, setAiScore] = useState(null); // New state for AI score
+  const [aiScore, setAiScore] = useState(null); 
 
   const auth= useContext(AuthContext);
   console.log("Auth context:", auth);
   const { token } = useContext(AuthContext);
 
-  // Parse location string to get latitude and longitude
+
   const getLocationCoordinates = (locationString) => {
     if (!locationString) return { latitude: 0, longitude: 0 };
     const [latitude, longitude] = locationString
@@ -71,7 +71,7 @@ const ProductDetails = () => {
         });
 
         setProduct(response.data);
-        setDisplayPrice(response.data.price); // Set initial price
+        setDisplayPrice(response.data.price); 
 
         const scoreResponse = await axios.get(
           `${API_URL}/api/reviews/getoverallscore/${id}/?score=true`,
@@ -187,7 +187,7 @@ const ProductDetails = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.imageGallery}>
           <FlatList
-            data={[product.image]} // Wrap single image in array
+            data={[product.image]} 
             keyExtractor={(_, index) => index.toString()}
             showsHorizontalScrollIndicator={false}
             pagingEnabled

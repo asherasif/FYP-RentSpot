@@ -1,7 +1,7 @@
 // src/data/products.js
 import electronic from '../assets/images/electronic.jpg';
 import furniture from '../assets/images/furniture.jpg';
-import books from '../assets/images/books.jpg'; // Make sure paths are correct
+import books from '../assets/images/books.jpg'; 
 
 export const products = [
   {

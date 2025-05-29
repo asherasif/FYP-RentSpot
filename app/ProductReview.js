@@ -21,7 +21,7 @@ import axios from "axios";
 import { useLocalSearchParams } from "expo-router";
 
 const ProductReview = () => {
-  // const [name, setName] = useState(""); // Commented out
+
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
   const [success, setSuccess] = useState(false);
@@ -36,7 +36,7 @@ const { productId } = useLocalSearchParams();
     console.log("Submitting Review for Item ID:", productId);
 
 
-    if (!review.trim() || rating === 0) { // Removed name check
+    if (!review.trim() || rating === 0) { 
       setError("All fields are required, including your rating.");
       return;
     }
@@ -46,7 +46,7 @@ const { productId } = useLocalSearchParams();
         `${API_URL}/api/reviews/submit/`,
         {
           item: productId,
-          // name,  // Commented out
+
           rating,
           review,
         },

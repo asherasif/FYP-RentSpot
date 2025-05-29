@@ -28,7 +28,7 @@ const MyProductsList = () => {
   const [currentBookingId, setCurrentBookingId] = useState(null);
   const [initiateReturnLoading, setInitiateReturnLoading] = useState(false);
 
-  // Clear data when tab changes to prevent stale data
+
   useEffect(() => {
     if (selectedTab === "reservation") {
       setMyItems([]);
@@ -37,12 +37,12 @@ const MyProductsList = () => {
     }
   }, [selectedTab]);
 
-  // Function to trigger a manual refresh
+ 
   const refreshReservations = useCallback(() => {
     setRefreshTrigger(prev => prev + 1);
   }, []);
 
-  // Function to fetch reservations data
+
   const fetchReservations = useCallback(async () => {
     if (!token) {
       console.error('No auth token found');
@@ -52,7 +52,7 @@ const MyProductsList = () => {
 
     try {
       setLoading(true);
-      // Add cache-busting timestamp
+      
       const timestamp = new Date().getTime();
       const headers = {
         Authorization: `Bearer ${token}`,
@@ -88,7 +88,6 @@ const MyProductsList = () => {
     }
   }, [token, user?.id]);
 
-  // Function to fetch user's created items
   const fetchMyItems = useCallback(async () => {
     if (!token) {
       console.error('No auth token found');
@@ -98,7 +97,7 @@ const MyProductsList = () => {
 
     try {
       setLoading(true);
-      // Add cache-busting timestamp
+  
       const timestamp = new Date().getTime();
       const headers = {
         Authorization: `Bearer ${token}`,
@@ -134,15 +133,14 @@ const MyProductsList = () => {
     }
   }, [token, user?.id]);
 
-  // Force refresh when user changes
   useEffect(() => {
-    // Clear existing data when user changes
+
     setMyItems([]);
     setReservations([]);
     setRefreshTrigger(prev => prev + 1);
   }, [user?.id]);
 
-  // Fetch data when component mounts or dependencies change
+
   useEffect(() => {
     if (selectedTab === "reservation") {
       fetchReservations();
@@ -151,12 +149,11 @@ const MyProductsList = () => {
     }
   }, [fetchReservations, fetchMyItems, refreshTrigger, selectedTab, user?.id]);
 
-  // Handle cancellation of a reservation
   const handleCancelReservation = useCallback(async (reservationId) => {
     if (!token || !reservationId) return;
 
     try {
-      // Optimistic UI update
+
       setReservations(prev =>
         prev.filter(item => item.id !== reservationId)
       );
@@ -172,12 +169,12 @@ const MyProductsList = () => {
       );
     } catch (error) {
       console.error("Error cancelling reservation:", error.message);
-      // Revert optimistic update if the API call failed
+   
       refreshReservations();
     }
   }, [token, refreshReservations]);
 
-  // Initiate Return Handler
+
   const handleInitiateReturn = useCallback(async (bookingId) => {
     if (!token || !bookingId) return;
     setCurrentBookingId(bookingId);
@@ -204,10 +201,10 @@ const MyProductsList = () => {
 
   const handleProceedToHome = useCallback(() => {
     setReturnInitiatedModalVisible(false);
-    router.push('/home'); // Assuming '/home' is your home route
+    router.push('/home'); 
   }, []);
 
-  // Debug render - display token status and API details (only in development)
+
   const renderDebugInfo = useCallback(() => {
     if (__DEV__) {
       return (
@@ -227,7 +224,7 @@ const MyProductsList = () => {
     return null;
   }, [token, reservations.length, myItems.length, refreshReservations, selectedTab]);
 
-  // Memoized reservation card component
+ 
   const ReservationCard = memo(({ item }) => {
     console.log("Rendering Reservation Card with item:", {
       id: item.id,
@@ -289,7 +286,7 @@ const MyProductsList = () => {
     );
   });
 
-  // Memoized item card component for user's created items
+
   const ItemCard = memo(({ item }) => {
     console.log("Rendering Item Card with item:", {
       id: item.id,
@@ -298,7 +295,7 @@ const MyProductsList = () => {
       latest_booking: item.latest_booking
     });
 
-    // Check if this item has a booking that's eligible for dispute filing
+
     const canFileDispute = item.latest_booking && 
       (item.latest_booking.delivery_status === 'delivered' || 
        item.latest_booking.delivery_status === 'in_delivery') && 
@@ -306,10 +303,10 @@ const MyProductsList = () => {
        item.latest_booking.return_status === 'in_return' || 
        item.latest_booking.return_status === 'completed');
 
-    // Function to fetch the latest booking for this item and navigate to dispute form
+    
     const handleFileDispute = async () => {
       try {
-        // If we already have the booking info from the API, use it directly
+        
         if (item.latest_booking && item.latest_booking.id) {
           router.push({
             pathname: "DisputeForm",
@@ -321,7 +318,7 @@ const MyProductsList = () => {
           return;
         }
 
-        // Otherwise, fetch the latest booking
+
         const headers = {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -334,7 +331,7 @@ const MyProductsList = () => {
         
         console.log("Latest booking response:", response.data);
         
-        // Navigate to dispute form with both itemId and bookingId
+       
         if (response.data && response.data.id) {
           router.push({
             pathname: "DisputeForm",
@@ -344,7 +341,7 @@ const MyProductsList = () => {
             }
           });
         } else {
-          // If no booking found, just pass the item ID
+    
           router.push({
             pathname: "DisputeForm",
             params: { itemId: item.id }
@@ -352,7 +349,7 @@ const MyProductsList = () => {
         }
       } catch (error) {
         console.error("Error fetching latest booking:", error);
-        // If error, just navigate with item ID
+ 
         router.push({
           pathname: "DisputeForm",
           params: { itemId: item.id }
@@ -360,7 +357,7 @@ const MyProductsList = () => {
       }
     };
 
-    // Get booking status text to display
+
     const getBookingStatusText = () => {
       if (!item.latest_booking) return "No booking";
       
@@ -421,7 +418,6 @@ const MyProductsList = () => {
     );
   });
 
-  // Handlers for tab selection with data refresh
   const handleReservationTab = useCallback(() => {
     setSelectedTab("reservation");
     setRefreshTrigger(prev => prev + 1);
@@ -432,17 +428,16 @@ const MyProductsList = () => {
     setRefreshTrigger(prev => prev + 1);
   }, []);
 
-  // Component mount - clear any stale data
+
   useEffect(() => {
-    // Clear any stale data on component mount
+
     setMyItems([]);
     setReservations([]);
     
-    // Log current user for debugging
     console.log("MyProductsList mounted with user:", user?.id, user?.username);
     
     return () => {
-      // Clear data on unmount
+ 
       setMyItems([]);
       setReservations([]);
     };
@@ -481,8 +476,7 @@ const MyProductsList = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Comment out debug info */}
-        {/* {renderDebugInfo()} */}
+
 
         <ScrollView className="mt-4">
           {loading ? (
@@ -508,11 +502,11 @@ const MyProductsList = () => {
               You haven't created any items yet
             </Text>
           ) : (
-            // Filter items to only show those with bookings that have delivery or return status
+          
             (() => {
               const eligibleItems = myItems.filter(item => 
                 item.latest_booking && (
-                  // Use AND condition between delivery status and return status
+                 
                   (item.latest_booking.delivery_status === 'delivered' || 
                    item.latest_booking.delivery_status === 'in_delivery') && 
                   (item.latest_booking.return_status === 'returned' || 

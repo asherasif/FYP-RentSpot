@@ -12,7 +12,7 @@ import CustomButton from "../../components/CustomButton";
 import FormField from "../../components/FormField";
 import { AuthContext } from "../../context/AuthContext";
 
-// ... categories array remains the same ...
+
 const categories = [
   {
     name: "Home and Kitchen Appliances",
@@ -114,8 +114,8 @@ const CreateItem = () => {
   const [form, setForm] = useState({
     title: "",
     price: "",
-    address: "",    // Detailed address string
-    location: "",   // Will store "latitude,longitude"
+    address: "",    
+    location: "",   
     category: "",
     sub_category: "",
     image: null,
@@ -125,7 +125,6 @@ const CreateItem = () => {
   const [subcategories, setSubcategories] = useState([]);
   const { token } = useContext(AuthContext);
 
-  // Get current location
   const getCurrentLocation = async () => {
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -146,7 +145,7 @@ const CreateItem = () => {
     }
   };
 
-  // ... openPicker and handleCategoryChange functions remain the same ...
+
   const openPicker = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -241,7 +240,7 @@ const CreateItem = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView className="px-4 my-6">
-        {/* ... existing title and price fields remain the same ... */}
+    
         <Text className="text-2xl text-white font-psemibold">Upload Ad</Text>
 
         <FormField
@@ -300,7 +299,7 @@ const CreateItem = () => {
           </View>
         </View>
 
-        {/* Subcategory Dropdown */}
+   
         <View className="mt-4 mb-3">
           <Text className="text-base text-gray-100 font-pmedium mb-2">Sub_category</Text>
           <View className="bg-black-100 border border-black-200 rounded-xl">

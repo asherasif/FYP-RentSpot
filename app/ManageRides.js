@@ -37,8 +37,7 @@ const ManageRides = () => {
       );
       console.log("Pending dispatch deliveries fetched:", response.data);
       
-      // Include all rides that have delivery_status as 'in_delivery' or 'pending'
-      // regardless of return status
+
       const dispatchRidesData = (response.data || []).filter(
         ride => ride.delivery_status === 'in_delivery' || ride.delivery_status === 'pending'
       );
@@ -80,7 +79,7 @@ const ManageRides = () => {
         { headers }
       );
       
-      // Filter for return rides: return_status === 'pending' or 'in_return'
+      
       const returnRidesData = (response.data || []).filter(
         ride => ride.return_status === 'pending' || ride.return_status === 'in_return'
       );

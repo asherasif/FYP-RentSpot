@@ -42,7 +42,6 @@ const InspectionReport = () => {
   const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Check if we have required data
   useEffect(() => {
     if (!bookingId) {
       Alert.alert(
@@ -94,7 +93,7 @@ const InspectionReport = () => {
     setUploading(true);
     
     try {
-      // Create form data for image upload
+   
       const formData = new FormData();
       formData.append('booking_id', bookingId);
       formData.append('report_type', 'checkout');
@@ -107,7 +106,7 @@ const InspectionReport = () => {
         type: form.image.type
       });
       
-      // Submit the inspection report
+     
       const response = await axios.post(
         `${API_URL}/api/condition_reports/`,
         formData,
@@ -144,7 +143,7 @@ const InspectionReport = () => {
       <ScrollView className="px-4 my-6">
         <Text className="text-2xl text-white font-psemibold">File your Inspection Report</Text>
 
-        {/* Category Dropdown */}
+     
         <View className="mt-10 mb-3">
           <Text className="text-base text-gray-100 font-pmedium mb-2">Inspection Category</Text>
           <View className="bg-black-100 border border-black-200 rounded-xl">
@@ -160,9 +159,7 @@ const InspectionReport = () => {
             </Picker>
           </View>
         </View>
-
-        {/* Description Field */}
-        <FormField
+       <FormField
           title="Description"
           value={form.description}
           placeholder="Describe the inspection results in detail..."
@@ -170,7 +167,7 @@ const InspectionReport = () => {
           otherStyles="mt-4 mb-3"
         />
 
-        {/* Upload Image */}
+
         <View className="mt-4 mb-3 space-y-2">
           <Text className="text-base text-gray-100 font-pmedium">Upload Image</Text>
           <TouchableOpacity onPress={openPicker}>
@@ -186,7 +183,7 @@ const InspectionReport = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Submit Button */}
+      
         <CustomButton
           title="Submit Report"
           containerStyles="mt-7"
@@ -194,7 +191,7 @@ const InspectionReport = () => {
           handlePress={handleSubmit}
         />
 
-        {/* Success Modal */}
+      
         <Modal isVisible={success} onBackdropPress={() => setSuccess(false)}>
           <View className="flex flex-col items-center justify-center bg-white p-7 rounded-2xl">
             <Image source={logo} className="w-28 h-28 mt-5" />

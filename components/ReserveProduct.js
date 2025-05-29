@@ -22,7 +22,7 @@ const color = {
 };
 
 const ReserveProduct = ({ route, navigation }) => {
-  // Dummy data for demonstration
+
   const product = {
     productID: "1",
     title: "Modern Living Room Furniture",

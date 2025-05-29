@@ -12,27 +12,27 @@ import { API_URL } from "@env";
 import { AuthContext } from "../context/AuthContext";
 
 import icon1 from "../assets/icons/search.png";
-import ProductCard from "../components/ProductCard"; // Import ProductCard component
+import ProductCard from "../components/ProductCard"; 
 
 const Search = () => {
-  const { token } = useContext(AuthContext); // Access the token from AuthContext
-  const [query, setQuery] = useState(""); // Track the search query
-  const [results, setResults] = useState([]); // Store search results
-  const [loading, setLoading] = useState(false); // Show loading state
-  const [debouncedQuery, setDebouncedQuery] = useState(""); // Debounced search query
+  const { token } = useContext(AuthContext); 
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]); 
+  const [loading, setLoading] = useState(false); 
+  const [debouncedQuery, setDebouncedQuery] = useState(""); 
 
-  // Debounce logic: Updates `debouncedQuery` after 500ms of no input
+  
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedQuery(query);
-    }, 250); // Adjust debounce time as needed
+    }, 250); 
 
     return () => {
-      clearTimeout(handler); // Cleanup timeout on input change
+      clearTimeout(handler); 
     };
   }, [query]);
 
-  // Fetch search results when `debouncedQuery` changes
+  
   useEffect(() => {
     const fetchResults = async () => {
       if (debouncedQuery.trim().length < 2) {
@@ -47,13 +47,13 @@ const Search = () => {
           `${API_URL}/api/items/search?q=${debouncedQuery}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Pass token in headers
+              Authorization: `Bearer ${token}`, 
             },
           }
         );
 
         if (response.data.search_results) {
-          // Process the image URLs
+         
           const processedResults = response.data.search_results.map((item) => ({
             ...item,
             image: item.image ? `${API_URL}/${item.image}`.replace(/\/\/+/g, "/") : null,
@@ -73,13 +73,13 @@ const Search = () => {
 
   const renderResultItem = ({ item }) => (
     <View className="p-4 bg-black-200 mb-2 rounded-lg">
-      <ProductCard product={item} /> {/* Render ProductCard component */}
+      <ProductCard product={item} /> 
     </View>
   );
 
   return (
     <View className="py-3">
-      {/* Search Input */}
+
       <View className="w-full h-16 bg-black-200 rounded-xl flex-row items-center px-4">
         <TextInput
           className="flex-1 text-white font-pregular"
@@ -92,7 +92,7 @@ const Search = () => {
         <Image source={icon1} className="w-5 h-5 ml-2" resizeMode="contain" />
       </View>
 
-      {/* Search Results */}
+      
       {loading ? (
         <ActivityIndicator size="large" color="#FFFFFF" style={{ marginTop: 20 }} />
       ) : (
@@ -104,7 +104,7 @@ const Search = () => {
         />
       )}
 
-      {/* Display "No results found" only after typing a query */}
+   
       {!loading && query.trim().length > 0 && results.length === 0 && (
         <Text className="text-white mt-4 text-center">
           No results found.

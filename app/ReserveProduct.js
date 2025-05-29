@@ -19,9 +19,7 @@ import moment from "moment";
 import axios from "axios";
 import {AuthContext} from "./../context/AuthContext";
 import racquet from "../assets/images/racquet.jpg";
-// import dummyImage1 from "../assets/images/racquet.jpg";
-// import dummyImage2 from "../assets/images/racquet.jpg";
-// import dummyImage3 from "../assets/images/racquet.jpg";
+
 import { API_URL } from "@env";
 
 const ReserveProduct = () => {
@@ -42,7 +40,7 @@ const ReserveProduct = () => {
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [selectedRange, setSelectedRange] = useState({});
 
-  // Fetch product data on component mount
+  
   useEffect(() => {
     const fetchProductData = async () => {
       try {
@@ -58,7 +56,7 @@ const ReserveProduct = () => {
         setProduct({
           title: response.data.title || "Product Name",
           displayPrice: response.data.price || 0,
-          // adding image here
+        
           image: response.data.image,
         });
       } catch (error) {

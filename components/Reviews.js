@@ -6,18 +6,18 @@ import { API_URL } from "@env";
 import { AuthContext } from "../context/AuthContext";
 
 const Reviews = ({ id }) => {
-  const { token } = useContext(AuthContext);// Get token from context
+  const { token } = useContext(AuthContext);
   const [reviewData, setReviewData] = useState([]);
-  // console.log("Review component received id:", id);
+
 
   useEffect(() => {
     const fetchReviews = async () => {
-      if (!id) return; // Ensure id and token are available
+      if (!id) return; 
 
       try {
         const response = await axios.get(`${API_URL}/api/reviews/getreview/${id}/`, {
           headers: {
-            Authorization: `Bearer ${token}`, // Add token in headers
+            Authorization: `Bearer ${token}`,
           },
         });
         console.log("here")
@@ -31,7 +31,7 @@ const Reviews = ({ id }) => {
     };
 
     fetchReviews();
-  }, [id, token]); // Re-run when id or token changes
+  }, [id, token]); 
 
   const renderItem = ({ item }) => (
     <View style={styles.reviewContainer}>
