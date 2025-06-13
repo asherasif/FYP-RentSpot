@@ -108,7 +108,6 @@ const Bookmark = () => {
 
       const processedMyRequests = myRequestsResponse.data.map(request => {
         if (request.status === 'pending') {
-         s
           const requestDate = new Date(request.created_at || request.request_date || request.date);
           const currentDate = new Date();
           const timeDifference = currentDate - requestDate;
